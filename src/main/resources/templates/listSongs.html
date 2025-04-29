@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
+<meta charset="utf-8">
+    <title>Songs Homepage - Welcome to My Music Store</title>
+</head>
+<body>
+<header>
+    <h1>Welcome to My Music Store</h1>
+
+    <form th:action="@{/songs}" th:method="get">
+        <input type="text" th:name="search">
+        <input type="submit" value="Search"></input>
+    </form>
+
+    <th:block sec:authorize="isAuthenticated()">
+        <a style="float: right" th:href="@{/logout}"><button>LOGOUT</button></a>
+    </th:block>
+
+    <th:block sec:authorize="!isAuthenticated()">
+        <a style="float: right" th:href="@{/login}"><button>LOGIN</button></a>
+    </th:block>
+
+
+</header>
+<main>
+    <h2>Choose a song:</h2>
+    <form th:method="POST" th:action="@{/artist}">
+
+        <div th:each="song : ${songList}">
+            Title: <th:block th:text="${song.getTitle()}"></th:block>
+            (Album: <th:block th:text="${song.getAlbum().getName()}"></th:block>)<br>
+            Genre: <th:block th:text="${song.getGenre()}"></th:block><br>
+            Release Year: <th:block th:text="${song.getReleaseYear()}"></th:block><br>
+
+            <input type="radio" name="songRadio" th:value="${song.getId()}">
+
+            <th:block sec:authorize="hasRole('ROLE_ADMIN')">
+                <a th:href="@{/songs/edit-form/{id}(id=${song.id})}">
+                    <button type="button">Edit song</button>
+                </a>
+            </th:block>
+
+            <th:block sec:authorize="hasRole('ROLE_ADMIN')">
+                <a th:href="@{/songs/delete/{id}(id=${song.id})}">
+                    <button type="button">Delete song</button>
+                </a>
+            </th:block>
+
+            <br/>
+            <br/>
+        </div>
+        <input type='submit' value='Submit'>
+    </form>
+
+    <br>
+    <br>
+    <br>
+    <br>
+
+    <th:block sec:authorize="hasRole('ROLE_ADMIN')">
+        <a th:href="@{/songs/add-form}">
+            <button type="button">Add new song</button>
+        </a>
+    </th:block>
+
+</main>
+
+
+
+</body>
+</html>
